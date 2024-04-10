@@ -20,7 +20,15 @@ set marObj [.myCanvas create image $m_x $m_y -image $marioCharImg]
 
 # Character Movement Procedure
 proc move { obj x y } {
-    .myCanvas move $obj $x $y
+    global m_x m_y keysym
+    if {([expr {$m_x + $x}] < 1000) && ([expr {$m_x + $x}] > 30)} {
+      .myCanvas move $obj $x $y
+      set m_x [expr {$m_x + $x}]
+      set m_y [expr {$m_y + $y}]
+
+    }
+    set keysym "$m_x and $m_y"
+    return
 }
 
 pack [label .l -textvariable keysym -padx 2m -pady 1m]
@@ -31,7 +39,14 @@ bind . <Key> {
   set dx 0
   set dy 0
   if {[string equal %K "Up"]} {
-    set dy -10
+    # Jump
+    set dy -245
+    after 200  { 
+      move $marObj $dx $dy
+      set dy 245
+      after 200 { move $marObj $dx $dy }
+    }
+    return 
   } elseif {[string equal %K "Down"]} {
     set dy 10
   } elseif {[string equal %K "Right"]} {
